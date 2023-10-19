@@ -1,7 +1,8 @@
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 
-use crate::{ParticleCount, Particle, PARTICLE_SIZE, PARTICLE_COLOR, BasicTimer};
+use crate::{ParticleCount, Particle, PARTICLE_SIZE, PARTICLE_COLOR_BASIC,
+    PARTICLE_COLOR_COMPLEX, BasicTimer, SelectedType};
 
 pub struct ParticlePlugin;
 
@@ -16,7 +17,8 @@ pub fn spawn_particle(
     input: Res<Input<MouseButton>>,
     // particle_query: Query<&Particle>,
     window_query: Query<&Window, With<PrimaryWindow>>,
-    mut particle_count: ResMut<ParticleCount>
+    mut particle_count: ResMut<ParticleCount>,
+    selected_type: Res<SelectedType>
 ) {
 
     // Functionality for spawning a particle by left-clicking inside the render screen. 
@@ -42,10 +44,10 @@ pub fn spawn_particle(
     if let Some(position) = this_window.cursor_position() {
     
         cursor_position_2d = position;
-        println!("Found cursor at position: {:?}", cursor_position_2d);
+        // println!("Found cursor at position: {:?}", cursor_position_2d);
 
     } else {
-        println!("Cursor out of window focus");
+        // println!("Cursor out of window focus");
         return;
     }
 
@@ -60,13 +62,20 @@ pub fn spawn_particle(
         0.0);                                           // In 2d space Z is irrelevant
 
     // Start spawning particle at the mouse position
-    println!("Spawning particle");
+    // println!("Spawning particle");
+
+    let particle_color;
+    if selected_type.particle_type.to_string() == "Basic" {
+        particle_color = PARTICLE_COLOR_BASIC;
+    } else {
+        particle_color = PARTICLE_COLOR_COMPLEX;
+    }
 
     commands.spawn((
         
         SpriteBundle {
             sprite: Sprite { custom_size: Some(Vec2::new(PARTICLE_SIZE, PARTICLE_SIZE)),
-                color: PARTICLE_COLOR, ..default() },
+                color: particle_color, ..default() },
             transform: Transform { translation: cursor_position_3d, ..default() },
             ..default()
         },
@@ -75,7 +84,7 @@ pub fn spawn_particle(
         //     name: "basic".to_string()
         // }
     
-    )).insert(Particle{name: "Basic".to_string()});
+    )).insert(Particle{name: selected_type.particle_type.to_string()});
 
     // Increase particle count
     particle_count.count += 1;
@@ -83,23 +92,23 @@ pub fn spawn_particle(
 }
 
 
-fn particle_gravity(
-    window_query: Query<&Window, With<PrimaryWindow>>,
-    mut particles: Query<(Entity, &mut Particle)>
-) {
+// fn particle_gravity(
+//     window_query: Query<&Window, With<PrimaryWindow>>,
+//     mut particles: Query<(Entity, &mut Particle)>
+// ) {
 
-    // Adds gravity to particles
+//     // Adds gravity to particles
 
-    let this_window = window_query.single();
-    let floor_border = -this_window.height() / 2.;
+//     let this_window = window_query.single();
+//     let floor_border = -this_window.height() / 2.;
 
-    // for (particle_entity, mut particle) in &mut particles {
+//     // for (particle_entity, mut particle) in &mut particles {
 
-    //     // TODO: Jopcik popcik kaut kā gravitēt vajag?
+//     //     // TODO: Jopcik popcik kaut kā gravitēt vajag?
 
-    // }
+//     // }
 
-}
+// }
 
 
 fn print_particles(time: Res<Time>, mut timer: ResMut<BasicTimer>, query: Query<&Particle>) {
@@ -111,7 +120,7 @@ fn print_particles(time: Res<Time>, mut timer: ResMut<BasicTimer>, query: Query<
         let mut particle_count: u8 = 0;
 
         for particle in &query {
-            println!("Particle: {}", particle.name);
+            // println!("Particle: {:?}", particle.name);
             particle_count += 1;
         }
 
