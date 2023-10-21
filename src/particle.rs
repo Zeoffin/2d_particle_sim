@@ -2,13 +2,13 @@ use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 
 use crate::{ParticleCount, Particle, PARTICLE_SIZE, PARTICLE_COLOR_BASIC,
-    PARTICLE_COLOR_COMPLEX, BasicTimer, SelectedType};
+    PARTICLE_COLOR_COMPLEX, BasicTimer, SelectedType, GRAVITY};
 
 pub struct ParticlePlugin;
 
 impl Plugin for ParticlePlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, spawn_particle);
+        app.add_systems(Update, (spawn_particle, particle_gravity));
     }
 }
 
@@ -92,23 +92,30 @@ pub fn spawn_particle(
 }
 
 
-// fn particle_gravity(
-//     window_query: Query<&Window, With<PrimaryWindow>>,
-//     mut particles: Query<(Entity, &mut Particle)>
-// ) {
+fn particle_gravity(
+    window_query: Query<&Window, With<PrimaryWindow>>,
+    mut particles: Query<(Entity, &mut Transform), With<Particle>>
+) {
 
-//     // Adds gravity to particles
+    // Adds gravity to particles
 
-//     let this_window = window_query.single();
-//     let floor_border = -this_window.height() / 2.;
+    let this_window = window_query.single();        // Get the window
+    let floor_border = -this_window.height() / 2.;      // Find the bottom of the window (floor)
 
-//     // for (particle_entity, mut particle) in &mut particles {
+    // Loop through our entities
+    for (p_entity, mut p_transform) in &mut particles {
 
-//     //     // TODO: Jopcik popcik kaut kā gravitēt vajag?
+        // Get current position
+        let mut current_position = &mut p_transform.translation;
+        
+        // Add a constant GRAVITY modifier, to let the particle sink to the bottom
+        if current_position.y - (PARTICLE_SIZE/2.) > floor_border {
+            current_position.y -= GRAVITY;
+        }
 
-//     // }
+    }
 
-// }
+}
 
 
 fn print_particles(time: Res<Time>, mut timer: ResMut<BasicTimer>, query: Query<&Particle>) {

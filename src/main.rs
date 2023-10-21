@@ -15,7 +15,7 @@ const PARTICLE_COLOR_BASIC: Color = Color::rgb(0.62, 0.53, 0.32);
 const PARTICLE_COLOR_COMPLEX: Color = Color::rgb(0., 1., 0.4);
 const PARTICLE_SIZE: f32 = 5.0;
 
-const GRAVITY: f32 = 0.2;
+const GRAVITY: f32 = 1.5;
 
 mod particle;
 
