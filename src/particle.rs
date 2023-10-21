@@ -8,7 +8,7 @@ pub struct ParticlePlugin;
 
 impl Plugin for ParticlePlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, (spawn_particle, particle_gravity));
+        app.add_systems(Update, (spawn_particle, particle_gravity_system));
     }
 }
 
@@ -61,8 +61,8 @@ pub fn spawn_particle(
         -(cursor_position_2d.y - window_y_center),      // y is flipped
         0.0);                                           // In 2d space Z is irrelevant
 
+
     // Start spawning particle at the mouse position
-    // println!("Spawning particle");
 
     let particle_color;
     if selected_type.particle_type.to_string() == "Basic" {
@@ -92,7 +92,7 @@ pub fn spawn_particle(
 }
 
 
-fn particle_gravity(
+fn particle_gravity_system(
     window_query: Query<&Window, With<PrimaryWindow>>,
     mut particles: Query<(Entity, &mut Transform), With<Particle>>
 ) {
@@ -114,6 +114,25 @@ fn particle_gravity(
         }
 
     }
+
+}
+
+
+fn particle_collision_system(
+    mut particles: Query<(Entity, &mut Transform), With<Particle>>
+) {
+
+    //    Ideas:
+    //
+    // 1) Naiive approach - two for loops for checking all particles.
+    //
+    // 2) Array / List / HashMap for keeping all taken positions at that moment. Updates in gravity system.
+    //    Then we can just check against the table for all positions and dont have to loop through all particles
+    //    twice. 
+
+    for (p_entity, mut p_transform) in &mut particles {
+
+    } 
 
 }
 
