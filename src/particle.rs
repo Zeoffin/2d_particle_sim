@@ -99,8 +99,9 @@ fn particle_gravity_system(
 
     // Adds gravity to particles
 
-    let this_window = window_query.single();        // Get the window
-    let floor_border = -this_window.height() / 2.;      // Find the bottom of the window (floor)
+    // TODO: We can get floor_border once and save it as a resource instead !
+    let this_window = window_query.single();                               // Get the window
+    let floor_border = (-this_window.height() / 2.) + (PARTICLE_SIZE/2.);      // Find the bottom of the window (floor)
 
     // Loop through our entities
     for (p_entity, mut p_transform) in &mut particles {
@@ -108,9 +109,15 @@ fn particle_gravity_system(
         // Get current position
         let mut current_position = &mut p_transform.translation;
         
+        let next_position = current_position.y - PARTICLE_SIZE;     // This way we have a grid system
+
         // Add a constant GRAVITY modifier, to let the particle sink to the bottom
-        if current_position.y - (PARTICLE_SIZE/2.) > floor_border {
+        if next_position > floor_border {
             current_position.y -= GRAVITY;
+
+        // If the next step is over the limits, set the position to be the floor border
+        } else if next_position <= floor_border {
+            current_position.y = floor_border;
         }
 
     }
@@ -119,7 +126,8 @@ fn particle_gravity_system(
 
 
 fn particle_collision_system(
-    mut particles: Query<(Entity, &mut Transform), With<Particle>>
+    mut particles: Query<(Entity, &mut Transform), With<Particle>>,     // Particle for which collision implemented
+    check_particles: Query<(Entity, &Transform), With<Particle>>        // Particles against which the collision is checked
 ) {
 
     //    Ideas:
@@ -130,9 +138,20 @@ fn particle_collision_system(
     //    Then we can just check against the table for all positions and dont have to loop through all particles
     //    twice. 
 
+
+    // Naiive approach
     for (p_entity, mut p_transform) in &mut particles {
 
-    } 
+        let mut particle_position = p_transform.translation;
+
+        // TODO: Check if entiry is on the floor. Then we can ignore collision check.         
+
+        for (check_entity, check_transform) in check_particles.iter() {
+
+            // TODO: lol
+
+        }
+    }
 
 }
 
