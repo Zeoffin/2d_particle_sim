@@ -13,9 +13,9 @@ const TYPE_TEXT_PADDING: Val = Val::Px(25.);
 
 const PARTICLE_COLOR_BASIC: Color = Color::rgb(0.62, 0.53, 0.32);
 const PARTICLE_COLOR_COMPLEX: Color = Color::rgb(0., 1., 0.4);
-const PARTICLE_SIZE: f32 = 5.0;
+const PARTICLE_SIZE: f32 = 5.;
 
-const GRAVITY: f32 = 3.;
+const GRAVITY: f32 = 20.5;
 
 mod particle;
 
@@ -38,12 +38,14 @@ impl Plugin for InitialPlugin {
         
         println!("Initializing plugins...");
 
-        let systems_to_add = (update_rendered_text,
-            bevy::window::close_on_esc);
+        let systems_to_add = (
+            update_rendered_text,
+            bevy::window::close_on_esc
+        );
 
         app.insert_resource(BasicTimer(Timer::from_seconds(4.0, TimerMode::Repeating)))
-            .insert_resource(ParticleCount{count:0})
-            .insert_resource(SelectedType{particle_type:"Basic".to_string()})
+            .insert_resource(ParticleCount{count: 0})
+            .insert_resource(SelectedType{particle_type: "Basic".to_string()})
             .add_systems(Startup, setup)
             .add_systems(Update, systems_to_add);
 
@@ -77,9 +79,14 @@ pub struct SelectedType {
 
 #[derive(Component)]
 pub struct Particle {
-    pub name: String
+    id: u16,                // Unique id for the particle
+    name: String,           // The name of the particle
+    rest_state: bool        // True, if particle is not moving, e.g., has no speed. False otherwise.
 }
 
+// TODO: Extending the Particle
+// Implement: speed
+// 
 
 // =======================================================================================================
 // ===================================== SYSTEMS =========================================================
@@ -126,7 +133,7 @@ fn update_rendered_text(
 
 }
 
-// Unable to get this working- can't borrow mutable reference?
+
 fn update_particle_count(
     particle_count: &Res<ParticleCount>,
     mut text: Mut<Text>
@@ -135,6 +142,7 @@ fn update_particle_count(
     text.sections[1].value = particle_count.count.to_string();
 
 }
+
 
 fn update_particle_type(
     mut text: Mut<Text>,
