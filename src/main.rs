@@ -13,9 +13,9 @@ const TYPE_TEXT_PADDING: Val = Val::Px(25.);
 
 const PARTICLE_COLOR_BASIC: Color = Color::rgb(0.62, 0.53, 0.32);
 const PARTICLE_COLOR_COMPLEX: Color = Color::rgb(0., 1., 0.4);
-const PARTICLE_SIZE: f32 = 5.;
+const PARTICLE_SIZE: f32 = 15.;
 
-const GRAVITY: f32 = 20.5;
+const GRAVITY: f32 = 2.5;
 
 mod particle;
 
@@ -85,8 +85,9 @@ pub struct Particle {
 }
 
 // TODO: Extending the Particle
-// Implement: speed
-// 
+// Implement:  
+//      - speed
+//      - Move function => takes in id (or reference to the particle?) and moves that particle in the x,y system
 
 // =======================================================================================================
 // ===================================== SYSTEMS =========================================================

@@ -115,7 +115,7 @@ fn particle_gravity_system(
 
             // Get current position
             let mut current_position = &mut p_transform.translation;
-            
+
             let next_position = current_position.y - PARTICLE_SIZE;     // This way we have a grid system
 
             // Add a constant GRAVITY modifier, to let the particle sink to the bottom
@@ -150,20 +150,24 @@ fn particle_collision_system(
 
     let mut particles = particles_query.iter_combinations_mut();
 
+    // Loop through each possible pair combination of particles. Ineffective but 
     while let Some(
         [(mut particle_1, p_transform_1),
         (mut particle_2, p_transform_2)]
     ) = particles.fetch_next() {
 
+        // Get translation values
         let particle_1_position = p_transform_1.translation;
         let particle_2_position = p_transform_2.translation;
 
+        // Here, we check if particle_1 is higher up than particle_2, and is not in rest state
         if particle_1_position.y > particle_2_position.y && !particle_1.rest_state {
 
             check_for_down_particle(
                 particle_1, particle_1_position,
-                particle_2,particle_2_position);
+                particle_2, particle_2_position);
 
+        // Same as in previous statement, but check for other pairing possibility
         } else if particle_2_position.y > particle_1_position.y && !particle_2.rest_state {
 
             check_for_down_particle(
@@ -184,9 +188,40 @@ fn check_for_down_particle(
     mut particle_2_position: Vec3,
 ) {
 
+    // Check if difference in y position matches with its dimensions
     if particle_1_position.y - particle_2_position.y <= PARTICLE_SIZE {
-        println!("CHECK SUCCESFUL");
-        particle_1.rest_state = true;
+
+        // Get the diffence on x axis
+        let x_difference = particle_1_position.x - particle_2_position.x;
+
+
+        // Check if less than half of a particle is on top of another one
+        if x_difference.abs() >= PARTICLE_SIZE / 2. && x_difference.abs() < PARTICLE_SIZE {
+
+            // Make the particle fall down
+            // If difference is a negative number, we move particle to the left. Else right.
+            if x_difference <= 0. {
+
+                particle_1_position.x -= PARTICLE_SIZE;
+
+            } else {
+
+                particle_1_position.x += PARTICLE_SIZE;
+
+            }
+
+            // Unset rest state
+            particle_1.rest_state = false;
+
+        // Check if more than half of the particle is on another one
+        } else if x_difference.abs() < PARTICLE_SIZE / 2. {
+
+            // If thats the case, then the particle has landed on top of another one. Set rest state.
+            particle_1_position.y = particle_2_position.y + PARTICLE_SIZE;
+            particle_1.rest_state = true;
+
+        }
+
     }
 
 }
