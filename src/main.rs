@@ -13,7 +13,7 @@ const TYPE_TEXT_PADDING: Val = Val::Px(25.);
 
 const PARTICLE_COLOR_BASIC: Color = Color::rgb(0.62, 0.53, 0.32);
 const PARTICLE_COLOR_COMPLEX: Color = Color::rgb(0., 1., 0.4);
-const PARTICLE_SIZE: f32 = 15.;
+const PARTICLE_SIZE: f32 = 15.;     // Diametrs gan pa x, gan pa y
 
 const GRAVITY: f32 = 2.5;
 

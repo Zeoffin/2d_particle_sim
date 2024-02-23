@@ -61,6 +61,8 @@ pub fn spawn_particle(
     let window_x_center = this_window.width() / 2.0;
     let window_y_center = this_window.height() / 2.0;
 
+    println!("Window h: {}   w: {}", this_window.height(), this_window.width());
+
     let cursor_position_3d: Vec3 = Vec3::new(
         cursor_position_2d.x - window_x_center,         // x has the same direction
         -(cursor_position_2d.y - window_y_center),      // y is flipped
@@ -150,6 +152,9 @@ fn particle_collision_system(
 
     let mut particles = particles_query.iter_combinations_mut();
 
+
+    // 
+
     // Loop through each possible pair combination of particles. Ineffective but 
     while let Some(
         [(mut particle_1, mut p_transform_1),
@@ -193,11 +198,12 @@ fn check_for_down_particle(
 
         // Get the diffence on x axis
         let x_difference = particle_1_position.x - particle_2_position.x;
-        let x_allowed_limit: f32 = PARTICLE_SIZE / 3.;
+        let x_absolute_difference = x_difference.abs();
+        let x_allowed_limit: f32 = 0.;
 
 
         // Check if less than half of a particle is on top of another one
-        if x_difference.abs() >= x_allowed_limit && x_difference.abs() < PARTICLE_SIZE {
+        if x_absolute_difference >= x_allowed_limit && x_absolute_difference < PARTICLE_SIZE {
 
             // Make the particle fall down
             // If difference is a negative number, we move particle to the left. Else right.
